@@ -1,4 +1,10 @@
-# IOS 
+# iOS 原生配置指南
+
+> **⚠️ 重要說明：** 本文檔中的配置僅適用於 **bare workflow** 或執行 `expo prebuild` 後的專案。  
+> 如果您使用 **Expo managed workflow**，這些配置不需要手動處理，Expo 會自動管理。  
+> 本專案預設使用 Expo managed workflow，因此以下內容僅供參考。
+
+---
 
 ## add font in info.plist
 

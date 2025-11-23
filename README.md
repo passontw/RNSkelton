@@ -10,7 +10,7 @@
 - **語言**: TypeScript
 - **UI 組件**: React Native 原生組件 + 自定義組件
 - **主題**: 支援深色/淺色模式切換
-- **開發工具**: Flipper、Redux DevTools
+- **開發工具**: Expo Redux DevTools Plugin
 
 ## 🚀 快速開始
 
@@ -208,60 +208,76 @@ function* loginSaga(action: ReturnType<typeof loginRequest>) {
 
 ## 🛠️ Redux DevTools 使用指南
 
-### 方法 1: 使用 Flipper (推薦)
+本專案提供多種 Redux DevTools 方案，推薦使用 **Expo DevTools Plugin**（已預先配置，開箱即用）。
 
-Flipper 是 Meta 開發的強大行動應用程式除錯工具，本專案已預先安裝 `redux-flipper` 和 `react-native-flipper`。
+### 方法 1: 使用 Expo Redux DevTools Plugin（✨ 強烈推薦）
 
-#### 安裝 Flipper Desktop
+**已預先配置完成，無需額外設定！** Expo DevTools Plugin 是最簡單且功能完整的 Redux 除錯方案。
 
-1. 下載並安裝 [Flipper Desktop](https://fbflipper.com/)
-2. 啟動 Flipper 應用程式
+#### 為什麼選擇 Expo DevTools？
 
-#### 配置 Redux Store
+- ✅ **零配置**：專案已自動整合，無需任何設定
+- ✅ **終端啟動**：按 `shift + m` 即可開啟，無需額外安裝應用程式
+- ✅ **全平台支援**：iOS、Android、Web 都能使用
+- ✅ **無需原生建置**：純 JS 方案，不影響原生建置
+- ✅ **功能完整**：時間旅行、State 檢視、手動 Dispatch 等全部支援
+- ✅ **效能優異**：輕量級設計，對應用效能影響極小
 
-在 `configureStore.ts` 中添加 Flipper 中介軟體：
+#### 快速開始
 
-```typescript
-import { createReduxFlipperMiddleware } from 'redux-flipper';
+**步驟 1：啟動專案**
 
-const sagaMiddleware = createSagaMiddleware();
-
-// 僅在開發環境啟用 Flipper
-const middleware = [sagaMiddleware];
-if (__DEV__) {
-  const reduxFlipperMiddleware = createReduxFlipperMiddleware();
-  middleware.push(reduxFlipperMiddleware);
-}
-
-export const store = configureStore({
-  reducer: {
-    auth: authReducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-      immutableCheck: false,
-    }).concat(middleware),
-});
+```bash
+npx expo start
 ```
 
-#### 使用 Flipper
+**步驟 2：開啟 Redux DevTools**
 
-1. 執行專案：`npx expo start`
-2. 在 iOS 或 Android 裝置/模擬器上啟動應用程式
-3. 開啟 Flipper Desktop
-4. 在左側裝置列表中找到您的應用程式
-5. 啟用 **Redux** 插件
+在終端中按 `shift + m`，選擇 `redux-devtools-expo-dev-plugin`：
 
-您現在可以看到：
+```
+┌─────────────────────────────────────┐
+│  More tools                         │
+│  ─────────────────────────────      │
+│  › redux-devtools-expo-dev-plugin   │ ← 選這個！
+│    @dev-plugins/react-navigation    │
+└─────────────────────────────────────┘
+```
+
+**步驟 3：在瀏覽器中查看**
+
+Redux DevTools 會自動在瀏覽器中開啟，您可以看到：
 - 📝 所有 Redux Actions 的歷史記錄
 - 🔄 State 變化前後的差異（diff）
 - 📦 Action 的詳細資訊和 Payload
 - ⏱️ 時間旅行除錯功能
-- 🌐 網路請求監控
-- 🎨 佈局檢視器
+- 📊 狀態樹視圖
 
-### 方法 2: 使用 Reactotron (替代方案)
+#### 測試功能
+
+使用測試帳號驗證 Redux 功能：
+
+```
+使用者名稱: demo
+密碼: password
+```
+
+在應用程式中執行登入，在 DevTools 中觀察以下 Actions：
+
+```
+@@INIT                    # Redux Store 初始化
+auth/loginRequest         # 觸發登入請求（Saga）
+auth/loginStart           # 開始登入流程
+auth/loginSuccess         # 登入成功
+```
+
+#### 完整文檔
+
+詳細使用說明請參閱：[Expo Redux DevTools Plugin 使用指南](./docs/expo-redux-devtools.md)
+
+---
+
+### 方法 2: 使用 Reactotron（替代方案）
 
 #### 安裝 Reactotron
 
@@ -320,9 +336,11 @@ export const store = configureStore({
 2. 執行應用程式
 3. 在 Reactotron 中查看 Redux 狀態和 Actions
 
-### 方法 3: Redux DevTools Extension (Expo Web)
+### 方法 3: Redux DevTools Extension（僅適用於 Expo Web）
 
 當使用 Expo Web 時，可以直接使用瀏覽器的 Redux DevTools Extension。
+
+**注意**：由於專案已配置 Expo DevTools Plugin，需要修改 `configureStore.ts` 才能使用瀏覽器擴充套件。
 
 **安裝瀏覽器擴充功能：**
 - [Chrome](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd)
@@ -333,21 +351,40 @@ export const store = configureStore({
 2. 在瀏覽器中按 F12 開啟開發者工具
 3. 切換到 **Redux** 分頁
 
-`@reduxjs/toolkit` 的 `configureStore` 會自動整合 DevTools，無需額外配置。
+**配置修改（如需使用）：**
+
+```typescript
+// 將 configureStore.ts 中的配置改為：
+export const store = configureStore({
+  // ...
+  devTools: process.env.NODE_ENV !== 'production', // 改為 true
+  enhancers: (getDefaultEnhancers) => getDefaultEnhancers(), // 移除 devToolsEnhancer
+});
+```
 
 ### DevTools 功能比較
 
-| 功能 | Flipper | Reactotron | Redux DevTools |
-|------|---------|------------|----------------|
-| 支援平台 | iOS, Android | iOS, Android, Web | Web Only |
-| Redux 狀態檢視 | ✅ | ✅ | ✅ |
-| 時間旅行除錯 | ✅ | ✅ | ✅ |
-| 網路請求監控 | ✅ | ✅ | ❌ |
-| 效能監控 | ✅ | ⚠️ 有限 | ❌ |
-| 佈局檢視器 | ✅ | ❌ | ❌ |
-| AsyncStorage 檢視 | ✅ | ✅ | ❌ |
-| 學習曲線 | 中等 | 簡單 | 簡單 |
-| 官方支援 | Meta 官方 | 社群 | Redux 官方 |
+| 功能 | Expo DevTools | Reactotron | Redux DevTools Ext |
+|------|---------------|------------|-------------------|
+| **支援平台** | iOS, Android, Web | iOS, Android, Web | Web Only |
+| **安裝難度** | ⭐ 零配置 | ⭐⭐ 需配置 | ⭐ 瀏覽器擴充 |
+| **終端啟動** | ✅ shift + m | ❌ | ❌ |
+| **Redux 狀態檢視** | ✅ | ✅ | ✅ |
+| **時間旅行除錯** | ✅ | ✅ | ✅ |
+| **手動 Dispatch** | ✅ | ✅ | ✅ |
+| **網路請求監控** | ❌ | ✅ | ❌ |
+| **效能監控** | ❌ | ⚠️ 有限 | ❌ |
+| **AsyncStorage 檢視** | ❌ | ✅ | ❌ |
+| **Expo Go 支援** | ✅ | ✅ | ✅ (Web) |
+| **學習曲線** | ⭐ 極簡單 | ⭐⭐ 簡單 | ⭐⭐ 簡單 |
+| **官方支援** | Expo 官方 | 社群 | Redux 官方 |
+
+**推薦使用順序：**
+1. 🥇 **Expo DevTools** - 開發 Redux 邏輯（強烈推薦，適用於 Expo 專案）
+2. 🥈 **Reactotron** - 需要網路請求監控和 AsyncStorage 檢視
+3. 🥉 **Redux DevTools Ext** - 僅在 Web 平台開發時
+
+**⚠️ 注意：** Flipper 需要原生建置，不適用於 Expo managed workflow 或 Expo Go，因此本專案不包含 Flipper 支援。如果需要使用 Flipper，請使用 `expo prebuild` 轉換為 bare workflow。
 
 ## 💡 最佳實踐
 
@@ -417,16 +454,22 @@ export const loginRequest = (payload: LoginRequest) => ({
 
 ### 3. Redux DevTools 最佳實踐
 
-#### 僅在開發環境啟用
+#### 使用 Expo DevTools Plugin（推薦）
 ```typescript
-// ✅ Good
-if (__DEV__) {
-  const reduxFlipperMiddleware = createReduxFlipperMiddleware();
-  middleware.push(reduxFlipperMiddleware);
-}
+// ✅ Good: 使用 Expo DevTools（專案已預設配置）
+import devToolsEnhancer from 'redux-devtools-expo-dev-plugin';
 
-// ❌ Bad: 生產環境也啟用
-const middleware = [sagaMiddleware, createReduxFlipperMiddleware()];
+export const store = configureStore({
+  // ...
+  devTools: false, // 禁用內建 devTools
+  enhancers: (getDefaultEnhancers) => 
+    getDefaultEnhancers().concat(devToolsEnhancer()),
+});
+
+// ❌ Bad: 在生產環境啟用 DevTools
+export const store = configureStore({
+  devTools: true, // 生產環境也會啟用，影響效能
+});
 ```
 
 #### 清晰的 Action 命名
@@ -519,6 +562,7 @@ function* loginSaga(action: ReturnType<typeof loginRequest>) {
 - `react-redux` - React Redux 綁定
 - `redux-saga` - 處理副作用的中介軟體
 - `redux-thunk` - Thunk 中介軟體
+- `redux-devtools-expo-dev-plugin` - Expo Redux DevTools 除錯工具
 
 ### 路由導航
 - `@react-navigation/native` - React Navigation 核心
@@ -535,8 +579,6 @@ function* loginSaga(action: ReturnType<typeof loginRequest>) {
 
 ### 開發工具
 - `babel-plugin-root-import` - 路徑別名支援
-- `redux-flipper` - Flipper Redux 插件
-- `react-native-flipper` - Flipper React Native 整合
 
 ### 其他工具
 - `yup` - Schema 驗證
@@ -651,7 +693,8 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 ### 推薦資源
 - [React Native Best Practices](https://github.com/facebook/react-native/wiki/Best-Practices)
 - [TypeScript React Native Guide](https://reactnative.dev/docs/typescript)
-- [Flipper Documentation](https://fbflipper.com/docs/features/react-native/)
+- [Expo DevTools Plugins](https://docs.expo.dev/debugging/devtools-plugins/)
+- [Redux DevTools 官方文檔](https://github.com/reduxjs/redux-devtools)
 
 ## 📄 授權
 
