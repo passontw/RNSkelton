@@ -2,7 +2,7 @@ import { applyMiddleware, compose, legacy_createStore as createStore } from 'red
 import createSagaMiddleware from 'redux-saga';
 import { persistStore, persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import devToolsEnhancer from 'redux-devtools-expo-dev-plugin';
+import { composeWithDevTools } from 'redux-devtools-expo-dev-plugin';
 import rootReducer, { RootState } from './reducers';
 import rootSaga from './sagas';
 import {
@@ -26,13 +26,11 @@ const middlewares = [
   stopFetchingMiddleware,
 ];
 
-export const store = createStore(
-  persistedReducer,
-  compose(
-    applyMiddleware(...middlewares),
-    devToolsEnhancer(),
-  ),
-);
+const enhancer = __DEV__
+  ? composeWithDevTools(applyMiddleware(...middlewares))
+  : compose(applyMiddleware(...middlewares));
+
+export const store = createStore(persistedReducer, enhancer);
 
 export const persistor = persistStore(store);
 
