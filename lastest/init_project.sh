@@ -34,6 +34,9 @@ if [ -f ../template/.env.example ]; then
 fi
 rm -f src/App.js
 
+echo "設定 tsconfig.json（啟用 paths 路徑別名，取代 babel-plugin-root-import）"
+cp ../lastest/tsconfig.json ./tsconfig.json
+
 echo "安裝套件"
 ../lastest/add_packages.sh
 
