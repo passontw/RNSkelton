@@ -9,7 +9,8 @@ yarn install
 # Redux 相關（版本需同步升級，不可單獨升級）
 # 追蹤 issues：#7（redux）、#2（redux-persist）、#11（redux-saga）
 echo "新增 Redux 相關套件..."
-yarn add react-redux@^9.3.1 redux@^5.0.1 redux-saga@^1.6.0 redux-persist@^6.0.0 redux-devtools-expo-dev-plugin@^2.0.0
+yarn add react-redux@^9.3.1 redux@^5.0.1 redux-saga@^1.6.0 redux-persist@^6.0.0
+yarn add --dev redux-devtools-expo-dev-plugin@^2.0.0
 
 # Expo 管理套件（版本由 expo install 自動配對，不手動指定）
 # 追蹤 issues：#1（Expo SDK 升級）
