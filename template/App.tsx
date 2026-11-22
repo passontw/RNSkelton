@@ -4,11 +4,12 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { useColorScheme } from 'react-native';
+import { PersistGate } from 'redux-persist/integration/react';
 
 import { Colors } from './constants/Colors';
 import { Navigation } from './navigation';
 import { Provider } from 'react-redux';
-import { store } from './navigation/store/configureStore';
+import { store, persistor } from './navigation/store/configureStore';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -19,7 +20,6 @@ export function App() {
   });
 
   if (!loaded) {
-    // Async font loading only occurs in development.
     return null;
   }
 
@@ -36,19 +36,20 @@ export function App() {
 
   return (
     <Provider store={store}>
-      <Navigation
-        theme={theme}
-        linking={{
-          enabled: 'auto',
-          prefixes: [
-            // Change the scheme to match your app's scheme defined in app.json
-            'helloworld://',
-          ],
-        }}
-        onReady={() => {
-            SplashScreen.hideAsync();
+      <PersistGate loading={null} persistor={persistor}>
+        <Navigation
+          theme={theme}
+          linking={{
+            enabled: 'auto',
+            prefixes: [
+              'helloworld://',
+            ],
           }}
-        />
+          onReady={() => {
+              SplashScreen.hideAsync();
+            }}
+          />
+      </PersistGate>
     </Provider>
   );
 }
