@@ -19,16 +19,20 @@ npx expo install @react-native-async-storage/async-storage
 echo "安裝 SecureStore（token 安全儲存，使用 iOS Keychain / Android Keystore）..."
 npx expo install expo-secure-store
 
+echo "安裝 Expo 管理的 UI 套件..."
+npx expo install expo-haptics expo-web-browser expo-image expo-linking
+
 # 其他套件
 # 注意事項：
 # - flux-constants 已移除，改用 TypeScript as const（issue #12）
 # - react-native-modal-overlay 已移除，改用 react-native-modal（issue #3）
 # - babel-plugin-root-import 已移除，改用 tsconfig paths（issue #4）
 # - react-native-vector-icons 已移除，模板使用 @expo/vector-icons（Expo SDK 內建，issue #5）
-# - color v5 為 ESM only，注意 Metro 相容性（issue #8）
+# - color v5 為 ESM only，Metro 已設定 unstable_enablePackageExports（issue #8）
 # - yup v1 有 breaking changes（issue #9）
+# - react-native-modal v13+ 支援 New Architecture（Expo SDK 53+）
 echo "新增其他套件..."
-yarn add yup@^1.7.1 color@^5.0.3 react-native-modal@^2.2.0 react-native-config@^1.7.2
+yarn add yup@^1.7.1 color@^5.0.3 react-native-modal@^13.0.1 react-native-config@^1.7.2
 
 echo "使用 expo install 安裝 React Native 相關套件（確保版本相容）..."
 npx expo install react-native-safe-area-context react-native-svg
@@ -38,5 +42,6 @@ npx expo install --fix
 
 echo "套件安裝完成！"
 echo ""
-echo "未解決的追蹤 issues（需手動處理）："
-echo "  #1  Expo SDK 升級 52 → 58（React 18 → 19，Node 22+ 環境）"
+echo "注意事項："
+echo "  - 需要 Node.js 22+ 環境（Expo SDK 53+）"
+echo "  - New Architecture 預設啟用（Expo SDK 53+）"

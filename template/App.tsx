@@ -2,7 +2,6 @@ import 'react-native-reanimated';
 import { DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import * as React from 'react';
 import { useColorScheme } from 'react-native';
 import { PersistGate } from 'redux-persist/integration/react';
 
