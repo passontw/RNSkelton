@@ -1,4 +1,4 @@
-import { Middleware } from 'redux';
+import type { Middleware } from 'redux';
 import { startFetchingAction, stopFetchingAction } from '../actions/globalActions';
 import { basicAsyncActionTypes } from '../constants/actionTypes';
 
