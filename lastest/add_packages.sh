@@ -24,11 +24,11 @@ npx expo install expo-secure-store
 # - flux-constants 已移除，改用 TypeScript as const（issue #12）
 # - react-native-modal-overlay 已移除，改用 react-native-modal（issue #3）
 # - babel-plugin-root-import 已移除，改用 tsconfig paths（issue #4）
-# - react-native-vector-icons v10 有 breaking change，注意匯入方式（issue #5）
+# - react-native-vector-icons 已移除，模板使用 @expo/vector-icons（Expo SDK 內建，issue #5）
 # - color v5 為 ESM only，注意 Metro 相容性（issue #8）
 # - yup v1 有 breaking changes（issue #9）
 echo "新增其他套件..."
-yarn add yup@^1.7.1 color@^5.0.3 react-native-vector-icons@^10.3.0 react-native-modal@^2.2.0 react-native-config@^1.7.2
+yarn add yup@^1.7.1 color@^5.0.3 react-native-modal@^2.2.0 react-native-config@^1.7.2
 
 echo "使用 expo install 安裝 React Native 相關套件（確保版本相容）..."
 npx expo install react-native-safe-area-context react-native-svg
