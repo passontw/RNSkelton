@@ -37,6 +37,9 @@ rm -f src/App.js
 echo "設定 tsconfig.json（啟用 paths 路徑別名，取代 babel-plugin-root-import）"
 cp ../lastest/tsconfig.json ./tsconfig.json
 
+echo "設定 metro.config.js（啟用 unstable_enablePackageExports 支援 color v5 等 ESM-only 套件）"
+cp ../lastest/metro.config.js ./metro.config.js
+
 echo "安裝套件"
 ../lastest/add_packages.sh
 
