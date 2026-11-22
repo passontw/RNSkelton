@@ -8,6 +8,14 @@ if [ -z "$PROJ_NAME" ]; then
   exit 1
 fi
 
+# Expo SDK 53+ 需要 Node.js 22+
+NODE_MAJOR=$(node -e "process.stdout.write(process.version.split('.')[0].replace('v',''))" 2>/dev/null)
+if [ -z "$NODE_MAJOR" ] || [ "$NODE_MAJOR" -lt 22 ]; then
+  echo "錯誤: 此專案需要 Node.js 22 或更高版本（目前版本: $(node -v 2>/dev/null || echo '未安裝')）"
+  echo "請升級 Node.js：https://nodejs.org/"
+  exit 1
+fi
+
 echo "初始化 React Native 專案: $PROJ_NAME"
 npx create-expo-app $PROJ_NAME --example with-react-navigation
 cd $PROJ_NAME
