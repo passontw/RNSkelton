@@ -2,24 +2,25 @@ import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, Pressable, ActivityIndicator, Alert } from 'react-native';
 import { Text } from '@react-navigation/elements';
 import { useAppDispatch, useAppSelector } from '@/navigation/store/hooks';
-import { loginRequest } from '@/navigation/store/actions/authActions';
+import { signInAction } from '@/navigation/store/actions/authActions';
+import types from '@/navigation/store/constants/actionTypes';
 
 export default function LoginScreen() {
   const dispatch = useAppDispatch();
-  const { loading, error } = useAppSelector((state) => state.auth);
-  
+  const isLoading = useAppSelector((state) =>
+    state.fetching.pendingActionTypes.includes(types.SIGN_IN),
+  );
+  const { message } = useAppSelector((state) => state.auth);
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    // 驗證輸入
     if (!username.trim() || !password.trim()) {
       Alert.alert('錯誤', '請輸入使用者名稱和密碼');
       return;
     }
-
-    // 使用 Saga 處理登入
-    dispatch(loginRequest({ username: username.trim(), password }));
+    dispatch(signInAction({ username: username.trim(), password }));
   };
 
   return (
@@ -27,10 +28,9 @@ export default function LoginScreen() {
       <View style={styles.formContainer}>
         <Text style={styles.title}>歡迎登入</Text>
         <Text style={styles.subtitle}>請輸入您的帳號密碼</Text>
-        
-        {/* 提示訊息 */}
+
         <View style={styles.hintContainer}>
-          <Text style={styles.hint}>💡 測試帳號</Text>
+          <Text style={styles.hint}>測試帳號</Text>
           <Text style={styles.hintText}>使用者名稱: demo</Text>
           <Text style={styles.hintText}>密碼: password</Text>
         </View>
@@ -42,35 +42,35 @@ export default function LoginScreen() {
           onChangeText={setUsername}
           autoCapitalize="none"
           autoCorrect={false}
-          editable={!loading}
+          editable={!isLoading}
         />
-        
+
         <TextInput
           style={styles.input}
           placeholder="密碼"
           value={password}
           onChangeText={setPassword}
           secureTextEntry
-          editable={!loading}
+          editable={!isLoading}
           onSubmitEditing={handleLogin}
         />
 
-        {error && (
+        {message ? (
           <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>❌ {error}</Text>
+            <Text style={styles.errorText}>{message}</Text>
           </View>
-        )}
+        ) : null}
 
-        <Pressable 
+        <Pressable
           style={({ pressed }) => [
             styles.button,
-            loading && styles.buttonDisabled,
-            pressed && !loading && styles.buttonPressed
+            isLoading && styles.buttonDisabled,
+            pressed && !isLoading && styles.buttonPressed,
           ]}
           onPress={handleLogin}
-          disabled={loading}
+          disabled={isLoading}
         >
-          {loading ? (
+          {isLoading ? (
             <ActivityIndicator color="#fff" />
           ) : (
             <Text style={styles.buttonText}>登入</Text>

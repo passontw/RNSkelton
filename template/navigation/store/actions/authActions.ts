@@ -1,20 +1,10 @@
-import { AUTH_SAGA_ACTIONS } from "../sagas/authSagas";
+import types from '../constants/actionTypes';
 
-export interface LoginRequest {
-  username: string;
-  password: string;
-}
-
-export interface LoginSuccess {
-  id: string;
-  name: string;
-}
-
-export const loginRequest = (payload: LoginRequest) => ({
-  type: AUTH_SAGA_ACTIONS.LOGIN_REQUEST,
+export const signInAction = (payload: { username: string; password: string }) => ({
+  type: types.SIGN_IN,
   payload,
 });
 
-export const logoutRequest = () => ({
-  type: AUTH_SAGA_ACTIONS.LOGOUT_REQUEST,
+export const signOutAction = () => ({
+  type: types.SIGN_OUT_REQUEST,
 });
