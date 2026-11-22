@@ -1,69 +1,42 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import { applyMiddleware, compose, legacy_createStore as createStore } from 'redux';
 import createSagaMiddleware from 'redux-saga';
+import { persistStore, persistReducer } from 'redux-persist';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import devToolsEnhancer from 'redux-devtools-expo-dev-plugin';
-import authReducer from './slices/authSlices';
+import rootReducer, { RootState } from './reducers';
 import rootSaga from './sagas';
+import {
+  startFetchingMiddleware,
+  stopFetchingMiddleware,
+} from './middlewares/fetchingMiddleware';
 
-/**
- * 創建 Saga 中間件
- */
+const persistConfig = {
+  storage: AsyncStorage,
+  key: 'rn-skelton',
+  blacklist: ['fetching'],
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
 const sagaMiddleware = createSagaMiddleware();
 
-/**
- * 配置 Redux Store
- * 
- * 使用 Redux Toolkit 的 configureStore，整合了：
- * - redux-thunk 中間件（用於簡單的非同步邏輯）
- * - redux-saga 中間件（用於複雜的非同步流程控制）
- * - Expo Redux DevTools Plugin（開發環境下的除錯工具）
- * 
- * 使用方式：
- * 1. 啟動專案：npx expo start
- * 2. 在終端按 shift + m
- * 3. 選擇 "redux-devtools-expo-dev-plugin"
- * 4. Redux DevTools 會在瀏覽器中自動開啟
- * 
- * 參考文檔：https://docs.expo.dev/debugging/devtools-plugins/#redux
- */
-export const store = configureStore({
-  reducer: {
-    auth: authReducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      // 中間件配置選項
-      thunk: true, // 啟用 redux-thunk（預設已啟用）
-      serializableCheck: {
-        // 如果需要在 action 中傳遞 non-serializable 的值（如 Date、Promise 等），
-        // 可以在此處配置忽略的 action types 或路徑
-        ignoredActions: [],
-        ignoredActionPaths: [],
-        ignoredPaths: [],
-      },
-    }).concat(sagaMiddleware),
-  // ⭐ 重要: 禁用內建的 devTools，改用 Expo DevTools Plugin
-  devTools: false,
-  // ⭐ 添加 Expo Redux DevTools enhancer
-  enhancers: (getDefaultEnhancers) => 
-    getDefaultEnhancers().concat(devToolsEnhancer()),
-});
+const middlewares = [
+  startFetchingMiddleware,
+  sagaMiddleware,
+  stopFetchingMiddleware,
+];
+
+export const store = createStore(
+  persistedReducer,
+  compose(
+    applyMiddleware(...middlewares),
+    devToolsEnhancer(),
+  ),
+);
+
+export const persistor = persistStore(store);
 
 sagaMiddleware.run(rootSaga);
 
-/**
- * 從 store 本身推斷出 RootState 和 AppDispatch 型別
- * 這些型別將在整個應用程式中使用
- */
-export type RootState = ReturnType<typeof store.getState>;
+export type { RootState };
 export type AppDispatch = typeof store.dispatch;
-
-/**
- * Thunk Action 的型別定義
- * 用於定義非同步 action creators
- */
-export type AppThunk<ReturnType = void> = ThunkAction<
-  ReturnType,
-  RootState,
-  unknown,
-  Action<string>
->;

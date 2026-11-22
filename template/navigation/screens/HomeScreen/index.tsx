@@ -6,14 +6,14 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useAppDispatch, useAppSelector } from '@/navigation/store/hooks';
-import { logoutRequest } from '@/navigation/store/actions/authActions';
+import { signOutAction } from '@/navigation/store/actions/authActions';
 
 export default function Home() {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
 
   const handleLogout = () => {
-    dispatch(logoutRequest());
+    dispatch(signOutAction());
   };
 
   return (
@@ -26,25 +26,23 @@ export default function Home() {
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome{user ? `, ${user.name}` : ''}!</ThemedText>
+        <ThemedText type="title">Welcome{user?.name ? `, ${user.name}` : ''}!</ThemedText>
         <HelloWave />
       </ThemedView>
 
-      {/* 用戶資訊區塊 */}
       <ThemedView style={styles.userContainer}>
         <ThemedText type="subtitle">使用者資訊</ThemedText>
-        {user && (
+        {user?.id && (
           <ThemedView style={styles.userInfo}>
             <ThemedText>ID: {user.id}</ThemedText>
             <ThemedText>名稱: {user.name}</ThemedText>
           </ThemedView>
         )}
-        
-        {/* 登出按鈕 */}
-        <Pressable 
+
+        <Pressable
           style={({ pressed }) => [
             styles.logoutButton,
-            pressed && styles.logoutButtonPressed
+            pressed && styles.logoutButtonPressed,
           ]}
           onPress={handleLogout}
         >
